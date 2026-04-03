@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { Suspense, useState, useMemo, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 
 const locations = [
@@ -34,7 +34,7 @@ function getInitialCityId(searchParams: URLSearchParams | null): (typeof locatio
   return 'tallinn'
 }
 
-export default function Kontaktid() {
+function KontaktidContent() {
   const searchParams = useSearchParams()
   const cityFromUrl = searchParams.get('city')?.toLowerCase() ?? ''
   const initialId = useMemo(() => getInitialCityId(searchParams), [cityFromUrl, searchParams])
@@ -102,6 +102,20 @@ export default function Kontaktid() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function Kontaktid() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-gray-600">
+          Laadimine...
+        </div>
+      }
+    >
+      <KontaktidContent />
+    </Suspense>
   )
 }
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
+import { Suspense, useMemo, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import {
@@ -54,7 +54,7 @@ function getPrevMonthKey(key: string): string {
   return `${y}-${String(m - 1).padStart(2, '0')}`
 }
 
-export default function Koolituskalender() {
+function KoolituskalenderContent() {
   const events = useMemo(
     () => generateCourseEvents(new Date(), 52),
     []
@@ -646,5 +646,21 @@ export default function Koolituskalender() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function Koolituskalender() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-gray-600">
+            Laadimine...
+          </div>
+        </div>
+      }
+    >
+      <KoolituskalenderContent />
+    </Suspense>
   )
 }
