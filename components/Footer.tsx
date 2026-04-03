@@ -1,99 +1,81 @@
+'use client'
+
 import Link from 'next/link'
-import PartnersSlider from './PartnersSlider'
 
 export default function Footer() {
   return (
-    <>
-      <PartnersSlider />
-      <footer className="bg-slate-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {/* Contact Information */}
-          <div>
-            <h3 className="text-lg font-semibold mb-6 text-white">Kontaktid</h3>
-            <div className="space-y-3 text-gray-400">
-              <p className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-primary-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <span>Peterburi tee 47<br />Tallinn 11415</span>
-              </p>
-              <p className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-primary-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                <a href="tel:+3725290528" className="hover:text-primary-400 transition-colors">
-                  +372 5 290 528
-                </a>
-              </p>
-              <p className="flex items-center gap-3">
-                <svg className="w-5 h-5 text-primary-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <a href="mailto:info@turvakoolitus.eu" className="hover:text-primary-400 transition-colors">
-                  info@turvakoolitus.eu
-                </a>
-              </p>
+    <footer
+      className="px-8 py-8"
+      style={{ backgroundColor: 'hsl(215deg 100% 97.18%)' }}
+    >
+      {/* Main footer card */}
+      <div className="max-w-[44rem] mx-auto bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        {/* Main layout — responsive: stacked on small, row on >=670px */}
+        <div className="flex flex-col min-[670px]:flex-row items-center justify-between px-10 pb-10 pt-10 min-w-0 gap-6">
+          {/* Logo: below on small screens, left on large */}
+          <div className="flex items-center justify-center shrink-0 min-[670px]:mr-4 order-2 min-[670px]:order-1 w-full min-[670px]:w-auto">
+            <Link
+              href="/"
+              className="font-bold text-gray-900 hover:text-primary-600 transition-colors block leading-none"
+              style={{
+                fontFamily: 'var(--font-manrope), sans-serif',
+                fontSize: 'clamp(2.75rem, 4vw + 0.75rem, 3.75rem)',
+                marginLeft: 'clamp(8px, 2vw, 20px)',
+                marginRight: 'clamp(8px, 2vw, 20px)',
+              }}
+            >
+              turko
+            </Link>
+          </div>
+
+          {/* Pages + contacts: above on small screens, right on large */}
+          <div className="min-w-0 flex-1 flex flex-row justify-evenly items-center order-1 min-[670px]:order-2 w-full">
+            <div className="hidden min-[430px]:block w-auto shrink min-w-0">
+              <ul className="space-y-2.5">
+                <li><Link href="/kursused/koolitus" className="text-gray-600 hover:text-primary-600 text-sm transition-colors">Koolitus</Link></li>
+                <li><Link href="/koolituskalender" className="text-gray-600 hover:text-primary-600 text-sm transition-colors">Kalender</Link></li>
+                <li><Link href="/keskusest" className="text-gray-600 hover:text-primary-600 text-sm transition-colors">Keskusest</Link></li>
+                <li><Link href="/kontaktid" className="text-gray-600 hover:text-primary-600 text-sm transition-colors">Kontaktid</Link></li>
+                <li><Link href="/registreerimine" className="text-gray-600 hover:text-primary-600 text-sm transition-colors">Registreerimine</Link></li>
+              </ul>
             </div>
-          </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-lg font-semibold mb-6 text-white">Kiired lingid</h3>
-            <ul className="space-y-3 text-gray-400">
-              <li>
-                <Link href="/meiest/kontaktid" className="hover:text-primary-400 transition-colors inline-flex items-center gap-2 group">
-                  <span className="w-1 h-1 bg-primary-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                  Kontaktid
-                </Link>
-              </li>
-              <li>
-                <Link href="/meiest/paring" className="hover:text-primary-400 transition-colors inline-flex items-center gap-2 group">
-                  <span className="w-1 h-1 bg-primary-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                  Päring
-                </Link>
-              </li>
-              <li>
-                <Link href="/kursused/koolituskalender" className="hover:text-primary-400 transition-colors inline-flex items-center gap-2 group">
-                  <span className="w-1 h-1 bg-primary-400 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
-                  Koolituskalender
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Partners Section */}
-          <div>
-            <h3 className="text-lg font-semibold mb-6 text-white">Partnerid</h3>
-            <div className="space-y-3 text-gray-400">
-              <p className="hover:text-primary-400 transition-colors cursor-default">Eesti Politsei- ja Päästeamet</p>
-              <p className="hover:text-primary-400 transition-colors cursor-default">Turvaamet</p>
-              <p className="hover:text-primary-400 transition-colors cursor-default">Turvaliidud</p>
+            <div className="w-auto shrink min-w-0 self-stretch">
+              <ul className="h-full flex flex-col justify-between gap-4 items-center min-[430px]:items-start text-center min-[430px]:text-left">
+                <li>
+                  <p className="text-xs text-gray-500">Telefon</p>
+                  <p className="text-sm text-gray-600 mt-1">+3725290528</p>
+                </li>
+                <li>
+                  <p className="text-xs text-gray-500 font-normal">E-post</p>
+                  <p className="text-sm text-gray-600 mt-1">info@turko.ee</p>
+                </li>
+                <li>
+                  <p className="text-xs text-gray-500">Aadress</p>
+                  <Link href="/kontaktid" className="text-sm text-gray-600 mt-1 block hover:text-primary-600 transition-colors break-words">
+                    Väike-Paala tn 2,<br />
+                    11415 Tallinn
+                  </Link>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
 
-        <div className="border-t border-slate-800 mt-12 pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-sm">
-              &copy; {new Date().getFullYear()} Turvakoolituse Keskus. Kõik õigused kaitstud.
-            </p>
-            <div className="flex gap-6">
-              <Link href="/meiest" className="text-gray-400 hover:text-primary-400 text-sm transition-colors">
-                Meiest
-              </Link>
-              <Link href="/kursused" className="text-gray-400 hover:text-primary-400 text-sm transition-colors">
-                Kursused
-              </Link>
-              <Link href="/treeningud" className="text-gray-400 hover:text-primary-400 text-sm transition-colors">
-                Treeningud
-              </Link>
-            </div>
-          </div>
+      </div>
+
+      {/* Bottom strip — outside the card */}
+      <div className="flex flex-auto max-w-[44rem] mx-auto mt-4 flex-row-reverse flex-wrap justify-center min-[600px]:justify-between items-center gap-x-6 gap-y-2 text-sm text-gray-500">
+        <div className="flex items-center gap-6 shrink-0">
+          <Link href="/privaatsuspoliitika" className="hover:text-primary-600 transition-colors">
+            Privaatsuspoliitika
+          </Link>
+          <Link href="/kasutustingimused" className="hover:text-primary-600 transition-colors">
+            Kasutustingimused
+          </Link>
         </div>
+        <p>©2026 Turko Õppekeskus OÜ.</p>
       </div>
     </footer>
-    </>
   )
 }
