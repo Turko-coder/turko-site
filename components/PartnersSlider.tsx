@@ -1,6 +1,8 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
+import { useTranslations } from 'next-intl'
+import SectionOverlineHeading from '@/components/SectionOverlineHeading'
 
 interface Partner {
   name: string
@@ -16,37 +18,34 @@ const PARTNERS: Partner[] = [
   { name: 'Taifu', image: '/partners/taifu.png' },
 ]
 
+/** Muted grayscale; lg+ hover — same grayscale, brighter & higher contrast (contrast ≤ 1). */
+const partnerLogoClass =
+  'w-auto max-w-full object-contain opacity-[0.72] [filter:grayscale(1)_brightness(0.88)_contrast(0.95)] lg:transition-[opacity,filter] lg:duration-300 lg:ease-out lg:group-hover:opacity-100 lg:group-hover:[filter:grayscale(1)_brightness(1)_contrast(1)]'
+
 export default function PartnersSlider() {
+  const t = useTranslations('home')
   return (
-    <section className="bg-white py-16">
-      <div className="max-w-[48rem] mx-auto px-2 sm:px-3">
-        <h2
-          className="font-bold text-gray-900 text-center mb-8"
-          style={{ fontSize: '2.5rem', lineHeight: '3rem' }}
-        >
-          Meie partnerid
-        </h2>
+    <section className="bg-white pt-16 pb-4">
+      <div className="mx-auto max-w-[48rem] page-gutter-x">
+        <SectionOverlineHeading className="mb-8">{t('partnersTitle')}</SectionOverlineHeading>
+
         <div
-          className="flex flex-nowrap items-stretch w-full"
-          style={{ gap: 'clamp(0.5rem, 2vw, 1.25rem)' }}
+          className="flex flex-wrap justify-center gap-x-4 gap-y-4 sm:flex-nowrap sm:items-center sm:justify-center sm:gap-x-2 md:gap-x-3 lg:gap-x-4"
+          aria-label={t('partnersTitle')}
         >
           {PARTNERS.map((partner) => (
-            <div key={partner.name} className="group flex flex-1 min-w-0 flex-col items-center">
-              <Link
-                href="/keskusest#partnerid"
-                className="flex w-full aspect-square min-h-0 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-md p-2 cursor-pointer transition-all duration-300 hover:shadow-lg hover:border-gray-300"
-                aria-label={partner.name}
-              >
-                <img
-                  src={partner.image}
-                  alt={partner.name}
-                  className="max-h-full max-w-full w-auto h-auto object-contain group-hover:opacity-80 transition-opacity duration-300"
-                />
-              </Link>
-              <span className="mt-2 text-center text-xs text-gray-600 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                {partner.name}
-              </span>
-            </div>
+            <Link
+              key={partner.name}
+              href="/keskusest#partnerid"
+              className="group flex shrink-0 items-center justify-center px-1 py-0.5 transition-opacity active:opacity-60 sm:min-w-0 sm:flex-1 sm:basis-0"
+              aria-label={partner.name}
+            >
+              <img
+                src={partner.image}
+                alt=""
+                className={`${partnerLogoClass} max-h-14 max-w-[10.5rem] sm:max-h-[4rem] sm:max-w-none md:max-h-[4.5rem] lg:max-h-20 xl:max-h-[5.25rem]`}
+              />
+            </Link>
           ))}
         </div>
       </div>

@@ -1,17 +1,30 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useState, useEffect, useRef } from 'react'
+import { Link, usePathname, useRouter } from '@/i18n/navigation'
+import { useLocale, useTranslations } from 'next-intl'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { createPortal } from 'react-dom'
 
 export default function Navigation() {
+  const t = useTranslations('nav')
+  const locale = useLocale()
+  const router = useRouter()
+
   const [kursusedOpen, setKursusedOpen] = useState(false)
+  const [mobileKursusedOpen, setMobileKursusedOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [lang, setLang] = useState<'est' | 'rus'>('est')
-  
+  const scrollLockYRef = useRef(0)
+
   const kursusedRef = useRef<HTMLDivElement>(null)
-  const pathname = usePathname() ?? ''
+  const pathnameRaw = usePathname() ?? ''
+  const pathname = useMemo(() => {
+    if (!pathnameRaw) return ''
+    return pathnameRaw.length > 1 && pathnameRaw.endsWith('/')
+      ? pathnameRaw.slice(0, -1)
+      : pathnameRaw
+  }, [pathnameRaw])
 
   const isActive = (href: string) => pathname === href
   const isActivePrefix = (prefix: string) => pathname === prefix || pathname.startsWith(`${prefix}/`)
@@ -26,7 +39,10 @@ export default function Navigation() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (kursusedRef.current && !kursusedRef.current.contains(event.target as Node)) {
+      if (
+        kursusedRef.current &&
+        !kursusedRef.current.contains(event.target as Node)
+      ) {
         setKursusedOpen(false)
       }
     }
@@ -37,146 +53,211 @@ export default function Navigation() {
   useEffect(() => {
     setMobileMenuOpen(false)
     setKursusedOpen(false)
+    setMobileKursusedOpen(false)
+    // After route change, do not restore scroll from the previous page (menu lock ref).
+    scrollLockYRef.current = 0
+    window.scrollTo(0, 0)
   }, [pathname])
 
   useEffect(() => {
+    if (!mobileMenuOpen) setMobileKursusedOpen(false)
+  }, [mobileMenuOpen])
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+    if (pathname === '/kursused' || pathname.startsWith('/kursused/')) {
+      setMobileKursusedOpen(true)
+    }
+  }, [mobileMenuOpen, pathname])
+
+  useEffect(() => {
     if (!mobileMenuOpen) {
+      const y = scrollLockYRef.current
+      document.documentElement.style.overflow = ''
+      document.documentElement.style.touchAction = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      document.body.style.width = ''
       document.body.style.overflow = ''
+      document.body.style.touchAction = ''
+      window.scrollTo(0, y)
       return
     }
 
+    scrollLockYRef.current = window.scrollY
+    document.documentElement.style.overflow = 'hidden'
+    document.documentElement.style.touchAction = 'none'
+    document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollLockYRef.current}px`
+    document.body.style.left = '0'
+    document.body.style.right = '0'
+    document.body.style.width = '100%'
     document.body.style.overflow = 'hidden'
+    document.body.style.touchAction = 'none'
+
     return () => {
+      const y = scrollLockYRef.current
+      document.documentElement.style.overflow = ''
+      document.documentElement.style.touchAction = ''
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.left = ''
+      document.body.style.right = ''
+      document.body.style.width = ''
       document.body.style.overflow = ''
+      document.body.style.touchAction = ''
+      window.scrollTo(0, y)
     }
   }, [mobileMenuOpen])
 
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled ? 'bg-white/95 backdrop-blur-md shadow-md' : 'bg-white/80 backdrop-blur-sm'
-    }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20 relative">
+    <>
+    <nav
+      className={`fixed top-0 left-0 right-0 transition-all duration-300 ${
+        mobileMenuOpen ? 'z-[10060]' : 'z-50'
+      } ${
+        mobileMenuOpen
+          ? 'max-[869px]:bg-white max-[869px]:shadow-none max-[869px]:backdrop-blur-none ' +
+            (scrolled
+              ? 'min-[870px]:bg-white/95 min-[870px]:backdrop-blur-md min-[870px]:shadow-md'
+              : 'min-[870px]:bg-white/80 min-[870px]:backdrop-blur-sm')
+          : scrolled
+            ? 'bg-white/95 backdrop-blur-md shadow-md'
+            : 'bg-white/80 backdrop-blur-sm'
+      }`}
+    >
+      <div className="max-w-7xl mx-auto page-gutter-x relative">
+        <div
+          className={`flex justify-between items-center h-20 relative bg-inherit ${
+            mobileMenuOpen ? 'z-[70] max-[869px]:bg-white' : ''
+          }`}
+        >
           <Link 
             href="/" 
-            className="text-3xl font-bold text-gray-900 hover:text-primary-600 transition-colors duration-300"
+            className="text-3xl font-bold text-gray-900 transition-colors duration-300 hover:text-primary-600 max-[869px]:hover:text-gray-900"
             style={{ fontFamily: 'var(--font-manrope), sans-serif', letterSpacing: '0.06em' }}
           >
             turko
           </Link>
           
           {/* Desktop Navigation */}
-          <div className="hidden min-[870px]:flex items-center gap-0 absolute left-1/2 -translate-x-1/2">
+          <div className="hidden min-[870px]:flex items-center gap-1 absolute left-1/2 -translate-x-1/2">
             {/* Kursused Dropdown */}
             <div 
               ref={kursusedRef}
-              className="relative"
+              className="relative inline-block"
               onMouseEnter={() => setKursusedOpen(true)}
               onMouseLeave={() => setKursusedOpen(false)}
             >
               <span
-                className={`px-4 py-2 font-medium transition-colors duration-200 cursor-default inline-block ${
-                  kursusedOpen || isActivePrefix('/kursused') ? 'text-primary-600' : 'text-gray-700 hover:text-primary-600'
+                className={`inline-block cursor-default rounded-lg px-5 py-2.5 font-medium transition-colors duration-200 ${
+                  isActivePrefix('/kursused')
+                    ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    : kursusedOpen
+                      ? 'bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
                 }`}
               >
-                Kursused
+                {t('courses')}
               </span>
-              <div className={`absolute top-full left-0 mt-2 w-[14rem] bg-white rounded-xl shadow-xl py-2 z-50 border border-gray-100 transition-all duration-300 ${
+              <div className={`absolute top-full left-0 mt-2 w-max max-w-[min(100vw-2rem,24rem)] bg-white rounded-xl shadow-xl p-1.5 space-y-0.5 z-50 border border-gray-100 transition-all duration-300 ${
                 kursusedOpen ? 'opacity-100 translate-y-0 visible' : 'opacity-0 -translate-y-2 invisible'
               }`}>
-                <Link 
-                  href="/kursused/koolitus" 
-                  className="block px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 text-sm"
+                <Link
+                  href="/kursused/valvetootaja"
+                  className={`group flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm whitespace-nowrap transition-colors duration-200 ${
+                    isActive('/kursused/valvetootaja')
+                      ? 'bg-course-guard-50 text-course-guard-700 font-medium hover:bg-course-guard-100'
+                      : 'text-gray-700 hover:bg-course-guard-50 hover:text-course-guard-700'
+                  }`}
                 >
-                  Koolitus
-                </Link>
-                <Link 
-                  href="/kursused/valvetootaja" 
-                  className="flex items-center justify-between px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 text-sm"
-                >
-                  <span>Valvetöötaja</span>
-                  <span
-                    className="ml-3 inline-flex items-center justify-center gap-[0.2rem] py-1 pl-2.5 pr-3 rounded-lg text-xs font-semibold w-[3rem]"
-                    style={{ backgroundColor: '#E7F1FF', color: '#2F6BDE', fontFamily: 'var(--font-inter), Inter, sans-serif' }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="size-3.5 shrink-0"
-                      aria-hidden
-                    >
-                      <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z" />
-                    </svg>
-                    <span>3</span>
-                  </span>
-                </Link>
-                <Link 
-                  href="/kursused/turvatootaja" 
-                  className="flex items-center justify-between px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 text-sm"
-                >
-                  <span>Turvatöötaja</span>
-                  <span
-                    className="ml-3 inline-flex items-center justify-center gap-[0.2rem] py-1 pl-2.5 pr-3 rounded-lg text-xs font-semibold w-[3rem]"
-                    style={{ backgroundColor: '#E7F1FF', color: '#2F6BDE', fontFamily: 'var(--font-inter), Inter, sans-serif' }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="size-3.5 shrink-0"
-                      aria-hidden
-                    >
-                      <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z" />
-                    </svg>
-                    <span>4</span>
-                  </span>
-                </Link>
-                <Link 
-                  href="/kursused/turvajuht" 
-                  className="flex items-center justify-between px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 text-sm"
-                >
-                  <span>Turvajuht</span>
-                  <span
-                    className="ml-3 inline-flex items-center justify-center gap-[0.2rem] py-1 pl-2.5 pr-3 rounded-lg text-xs font-semibold w-[3rem]"
-                    style={{ backgroundColor: '#E7F1FF', color: '#2F6BDE', fontFamily: 'var(--font-inter), Inter, sans-serif' }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="size-3.5 shrink-0"
-                      aria-hidden
-                    >
-                      <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z" />
-                    </svg>
-                    <span>5</span>
-                  </span>
-                </Link>
-                <Link 
-                  href="/kursused/taiendope" 
-                  className="flex items-center justify-between px-4 py-2.5 text-gray-700 hover:bg-primary-50 hover:text-primary-600 transition-colors duration-200 text-sm"
-                >
-                  <span>Täiendõpe</span>
-                  <span
-                    className="ml-3 inline-flex items-center justify-center gap-[0.2rem] pl-2.5 pr-3 rounded-lg text-xs font-semibold w-[3rem]"
-                    style={{ backgroundColor: '#E7F1FF', color: '#2F6BDE', paddingTop: '5px', paddingBottom: '5px', fontFamily: 'var(--font-inter), Inter, sans-serif' }}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="size-5 shrink-0 text-course-guard-600"
                     aria-hidden
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 26 29"
-                      fill="currentColor"
-                      className="h-3.5 w-3.5"
-                    >
-                      <path
-                        d="M7.875 15.212c0-1.222.98-2.212 2.188-2.212h.874c1.21 0 2.188.99 2.188 2.211v11.27c0 1.22-.98 2.211-2.187 2.211h-.876c-.58 0-1.136-.233-1.546-.647a2.22 2.22 0 0 1-.641-1.564zM0 20.519c0-1.222.98-2.211 2.188-2.211h.874c1.21 0 2.188.99 2.188 2.211v5.962c0 1.22-.98 2.211-2.187 2.211h-.876c-.58 0-1.136-.233-1.546-.647A2.22 2.22 0 0 1 0 26.48z"
-                      />
-                      <path
-                        d="M16.5 26.5V6.828l-2.086 2.086a2 2 0 1 1-2.828-2.828l5.5-5.5.151-.138a2 2 0 0 1 2.677.138l5.5 5.5a2 2 0 1 1-2.828 2.828L20.5 6.828V26.5a2 2 0 1 1-4 0"
-                      />
-                    </svg>
-                  </span>
+                    <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                    <path
+                      fillRule="evenodd"
+                      d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {t('guard')}
+                </Link>
+                <Link
+                  href="/kursused/turvatootaja"
+                  className={`group flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm whitespace-nowrap transition-colors duration-200 ${
+                    isActive('/kursused/turvatootaja')
+                      ? 'bg-course-security-50 text-course-security-800 font-medium hover:bg-course-security-100'
+                      : 'text-gray-700 hover:bg-course-security-50 hover:text-course-security-800'
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="size-5 shrink-0 text-course-security-600"
+                    aria-hidden
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M11.484 2.17a.75.75 0 0 1 1.032 0 11.209 11.209 0 0 0 7.877 3.08.75.75 0 0 1 .722.515 12.74 12.74 0 0 1 .635 3.985c0 5.942-4.064 10.933-9.563 12.348a.749.749 0 0 1-.374 0C6.314 20.683 2.25 15.692 2.25 9.75c0-1.39.223-2.73.635-3.985a.75.75 0 0 1 .722-.516l.143.001c2.996 0 5.718-1.17 7.734-3.08ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75ZM12 15a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75v-.008a.75.75 0 0 0-.75-.75H12Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {t('security')}
+                </Link>
+                <Link
+                  href="/kursused/turvajuht"
+                  className={`group flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm whitespace-nowrap transition-colors duration-200 ${
+                    isActive('/kursused/turvajuht')
+                      ? 'bg-course-lead-50 text-course-lead-700 font-medium hover:bg-course-lead-100'
+                      : 'text-gray-700 hover:bg-course-lead-50 hover:text-course-lead-700'
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    className="size-5 shrink-0 text-course-lead-600"
+                    aria-hidden
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M12 2.25a.75.75 0 0 1 .75.75v.756a49.106 49.106 0 0 1 9.152 1 .75.75 0 0 1-.152 1.485h-1.918l2.474 10.124a.75.75 0 0 1-.375.84A6.723 6.723 0 0 1 18.75 18a6.723 6.723 0 0 1-3.181-.795.75.75 0 0 1-.375-.84l2.474-10.124H12.75v13.28c1.293.076 2.534.343 3.697.776a.75.75 0 0 1-.262 1.453h-8.37a.75.75 0 0 1-.262-1.453c1.162-.433 2.404-.7 3.697-.775V6.24H6.332l2.474 10.124a.75.75 0 0 1-.375.84A6.723 6.723 0 0 1 5.25 18a6.723 6.723 0 0 1-3.181-.795.75.75 0 0 1-.375-.84L4.168 6.241H2.25a.75.75 0 0 1-.152-1.485 49.105 49.105 0 0 1 9.152-1V3a.75.75 0 0 1 .75-.75Zm4.878 13.543 1.872-7.662 1.872 7.662h-3.744Zm-9.756 0L5.25 8.131l-1.872 7.662h3.744Z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  {t('securityLead')}
+                </Link>
+                <Link
+                  href="/kursused/taiendope"
+                  className={`block rounded-lg px-3 py-2.5 text-sm whitespace-nowrap transition-colors duration-200 ${
+                    isActive('/kursused/taiendope')
+                      ? 'bg-primary-50 text-primary-700 font-medium hover:bg-primary-100/80'
+                      : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
+                  }`}
+                >
+                  {t('refresher')}
+                </Link>
+                <Link
+                  href="/kursused/koolitus"
+                  className={`block rounded-lg px-3 py-2.5 text-sm whitespace-nowrap transition-colors duration-200 ${
+                    isActive('/kursused/koolitus')
+                      ? 'bg-primary-50 text-primary-700 font-medium hover:bg-primary-100/80'
+                      : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
+                  }`}
+                >
+                  {t('training')}
                 </Link>
               </div>
             </div>
@@ -184,38 +265,47 @@ export default function Navigation() {
             {/* Koolituskalender Button */}
             <Link 
               href="/koolituskalender" 
-              className={`px-4 py-2 font-medium transition-colors duration-200 ${
-                isActive('/koolituskalender') ? 'text-primary-600' : 'text-gray-700 hover:text-primary-600'
+              className={`inline-block rounded-lg px-5 py-2.5 font-medium transition-colors duration-200 ${
+                isActive('/koolituskalender')
+                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
               }`}
             >
-              Kalender
+              {t('calendar')}
             </Link>
 
             <Link
               href="/keskusest"
-              className={`px-4 py-2 font-medium transition-colors duration-200 ${
-                isActive('/keskusest') ? 'text-primary-600' : 'text-gray-700 hover:text-primary-600'
-              }`}
+              className={`inline-block rounded-lg px-5 py-2.5 font-medium transition-colors duration-200 ${
+                isActive('/keskusest')
+                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
+              } ${locale === 'ru' ? 'whitespace-nowrap' : ''}`}
             >
-              Keskusest
+              {t('about')}
             </Link>
 
             <Link
               href="/kontaktid"
-              className={`px-4 py-2 font-medium transition-colors duration-200 ${
-                isActive('/kontaktid') ? 'text-primary-600' : 'text-gray-700 hover:text-primary-600'
+              className={`inline-block rounded-lg px-5 py-2.5 font-medium transition-colors duration-200 ${
+                isActive('/kontaktid')
+                  ? 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  : 'text-gray-700 hover:bg-gray-100 hover:text-primary-600'
               }`}
             >
-              Kontaktid
+              {t('contacts')}
             </Link>
 
-            {/* Päring Button */}
-            <Link 
-              href="/registreerimine" 
-              className="ml-4 px-6 py-2 bg-primary-600 text-white rounded-lg font-semibold shadow-sm hover:bg-primary-700 transition-all duration-300 hover:shadow-lg cursor-pointer"
-              style={{ backgroundColor: '#177AE5' }}
+            {/* Registreerimine — same shape as nav pills; blue only on hover */}
+            <Link
+              href="/registreerimine"
+              className={`inline-block cursor-pointer rounded-lg px-5 py-2.5 font-medium transition-colors duration-200 ${
+                isActive('/registreerimine')
+                  ? 'bg-gray-100 text-gray-700 hover:bg-primary-600 hover:text-white'
+                  : 'text-gray-700 hover:bg-primary-600 hover:text-white'
+              }`}
             >
-              Registreeru
+              {t('register')}
             </Link>
 
           </div>
@@ -224,11 +314,11 @@ export default function Navigation() {
           <div className="hidden min-[870px]:flex items-center gap-1.5 absolute right-0 top-1/2 -translate-y-1/2">
             <button
               type="button"
-              onClick={() => setLang('est')}
+              onClick={() => router.replace(pathname ?? '/', { locale: 'et' })}
               className={`px-1 py-0 font-semibold text-sm uppercase tracking-wide transition-colors duration-200 ${
-                lang === 'est' ? 'text-primary-600' : 'text-primary-600/50 hover:text-primary-600/70'
+                locale === 'et' ? 'text-primary-600' : 'text-primary-600/50 hover:text-primary-600/70'
               }`}
-              aria-pressed={lang === 'est'}
+              aria-pressed={locale === 'et'}
               aria-label="Eesti keel"
             >
               EST
@@ -236,11 +326,11 @@ export default function Navigation() {
             <span className="text-primary-600 font-semibold select-none" aria-hidden="true">|</span>
             <button
               type="button"
-              onClick={() => setLang('rus')}
+              onClick={() => router.replace(pathname ?? '/', { locale: 'ru' })}
               className={`px-1 py-0 font-semibold text-sm uppercase tracking-wide transition-colors duration-200 ${
-                lang === 'rus' ? 'text-primary-600' : 'text-primary-600/50 hover:text-primary-600/70'
+                locale === 'ru' ? 'text-primary-600' : 'text-primary-600/50 hover:text-primary-600/70'
               }`}
-              aria-pressed={lang === 'rus'}
+              aria-pressed={locale === 'ru'}
               aria-label="Vene keel"
             >
               RUS
@@ -250,7 +340,7 @@ export default function Navigation() {
           {/* Mobile menu button */}
           <button
             type="button"
-            className="inline-flex min-[870px]:hidden items-center justify-center p-2 text-gray-700 hover:text-primary-600 transition-colors"
+            className="inline-flex min-[870px]:hidden items-center justify-center p-2 text-gray-700 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
             aria-expanded={mobileMenuOpen}
@@ -270,186 +360,224 @@ export default function Navigation() {
             </svg>
           </button>
         </div>
+      </div>
+    </nav>
 
-        {/* Mobile Menu */}
-        <div
-          className={`min-[870px]:hidden absolute top-full left-0 right-0 transition-all duration-300 ${
-            mobileMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
-          }`}
-        >
-          <button
-            type="button"
-            className={`fixed inset-0 z-40 bg-black/30 transition-opacity duration-300 ${
-              mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-            }`}
-            aria-label="Close menu overlay"
-            onClick={() => setMobileMenuOpen(false)}
-          />
+      {/* Portal to body: avoids Chrome Android stacking/compositing bugs inside fixed+backdrop-blur nav */}
+      {mounted &&
+        createPortal(
           <div
-            id="mobile-navigation"
-            className={`relative z-50 flex flex-col border-t border-gray-200 py-4 bg-white shadow-xl transition-transform duration-300 ${
-              mobileMenuOpen ? 'translate-y-0' : '-translate-y-4'
-            }`}
+            className={`min-[870px]:hidden ${mobileMenuOpen ? '' : 'pointer-events-none'}`}
+            aria-hidden={!mobileMenuOpen}
           >
-            <div className="px-6 py-2">
-              <button 
-                className="w-full text-left text-gray-700 font-medium hover:text-primary-600"
-                onClick={() => setKursusedOpen(!kursusedOpen)}
+            <button
+              type="button"
+              className={`fixed inset-x-0 top-20 bottom-0 z-[10040] touch-none overscroll-none bg-black/30 transition-opacity duration-300 ${
+                mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+              }`}
+              aria-label="Close menu overlay"
+              onClick={() => setMobileMenuOpen(false)}
+            />
+            <div
+              id="mobile-navigation"
+              className={`fixed inset-x-0 top-20 bottom-0 z-[10050] flex min-h-0 flex-col overflow-hidden bg-white transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
+                mobileMenuOpen
+                  ? 'translate-y-0 opacity-100'
+                  : 'pointer-events-none -translate-y-4 opacity-0'
+              }`}
+            >
+            <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-y-contain pt-2">
+              <button
+                type="button"
+                data-mobile-courses-trigger
+                className={`flex w-full items-center justify-between px-6 py-4 text-left text-2xl font-medium transition-colors !text-gray-900`}
+                aria-expanded={mobileKursusedOpen}
+                aria-controls="mobile-courses-panel"
+                onClick={() => setMobileKursusedOpen((open) => !open)}
               >
-                Kursused {kursusedOpen ? '▲' : '▼'}
+                <span
+                  className={
+                    !mobileKursusedOpen && isActivePrefix('/kursused') ? '!text-primary-600' : undefined
+                  }
+                >
+                  {t('courses')}
+                </span>
+                <span
+                  className={`text-3xl font-light leading-none transition-colors ${
+                    mobileKursusedOpen
+                      ? '!text-gray-900'
+                      : isActivePrefix('/kursused')
+                        ? '!text-primary-600'
+                        : '!text-gray-900'
+                  }`}
+                  aria-hidden
+                >
+                  {mobileKursusedOpen ? '−' : '+'}
+                </span>
               </button>
-              <div className={`overflow-hidden transition-all duration-300 ${
-                kursusedOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-              }`}>
-                <div className="px-6">
-                  <Link href="/kursused/koolitus" className="block px-6 py-2 text-sm text-gray-600 hover:text-primary-600">Koolitus</Link>
-                  <Link
-                    href="/kursused/valvetootaja"
-                    className="flex items-center justify-between px-6 py-2 text-sm text-gray-600 hover:text-primary-600"
-                  >
-                    <span>Valvetöötaja</span>
-                    <span
-                      className="ml-3 inline-flex items-center justify-center gap-[0.2rem] py-1 pl-2.5 pr-3 rounded-lg text-xs font-semibold w-[3rem]"
-                      style={{ backgroundColor: '#E7F1FF', color: '#2F6BDE', fontFamily: 'var(--font-inter), Inter, sans-serif' }}
-                    >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="size-3.5 shrink-0"
-                      aria-hidden
-                    >
-                      <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z" />
-                    </svg>
-                    <span>3</span>
-                    </span>
-                  </Link>
-                  <Link
-                    href="/kursused/turvatootaja"
-                    className="flex items-center justify-between px-6 py-2 text-sm text-gray-600 hover:text-primary-600"
-                  >
-                    <span>Turvatöötaja</span>
-                    <span
-                      className="ml-3 inline-flex items-center justify-center gap-[0.2rem] py-1 pl-2.5 pr-3 rounded-lg text-xs font-semibold w-[3rem]"
-                      style={{ backgroundColor: '#E7F1FF', color: '#2F6BDE', fontFamily: 'var(--font-inter), Inter, sans-serif' }}
-                    >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="size-3.5 shrink-0"
-                      aria-hidden
-                    >
-                      <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z" />
-                    </svg>
-                    <span>4</span>
-                    </span>
-                  </Link>
-                  <Link
-                    href="/kursused/turvajuht"
-                    className="flex items-center justify-between px-6 py-2 text-sm text-gray-600 hover:text-primary-600"
-                  >
-                    <span>Turvajuht</span>
-                    <span
-                      className="ml-3 inline-flex items-center justify-center gap-[0.2rem] py-1 pl-2.5 pr-3 rounded-lg text-xs font-semibold w-[3rem]"
-                      style={{ backgroundColor: '#E7F1FF', color: '#2F6BDE', fontFamily: 'var(--font-inter), Inter, sans-serif' }}
-                    >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                      className="size-3.5 shrink-0"
-                      aria-hidden
-                    >
-                      <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z" />
-                    </svg>
-                    <span>5</span>
-                    </span>
-                  </Link>
-                  <Link href="/kursused/taiendope" className="flex items-center justify-between px-6 py-2 text-sm text-gray-600 hover:text-primary-600">
-                    <span>Täiendõpe</span>
-                    <span
-                      className="ml-2 inline-flex items-center justify-center gap-[0.2rem] pl-2.5 pr-3 rounded-lg text-xs font-semibold w-[3rem]"
-                      style={{ backgroundColor: '#E7F1FF', color: '#2F6BDE', paddingTop: '5px', paddingBottom: '5px', fontFamily: 'var(--font-inter), Inter, sans-serif' }}
-                      aria-hidden
+
+              <div
+                className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+                  mobileKursusedOpen ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                }`}
+              >
+                <div id="mobile-courses-panel" className="min-h-0 overflow-hidden">
+                  <div className="flex flex-col px-6 pb-2 pl-14 pt-0">
+                    <Link
+                      href="/kursused/valvetootaja"
+                      className={`flex items-center gap-3 py-4 text-2xl font-medium transition-colors ${
+                        isActive('/kursused/valvetootaja')
+                          ? '!text-course-guard-600'
+                          : '!text-gray-900'
+                      }`}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 26 29"
+                        viewBox="0 0 24 24"
                         fill="currentColor"
-                        className="h-3.5 w-3.5"
+                        className="size-6 shrink-0 !text-course-guard-600"
+                        aria-hidden
                       >
+                        <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
                         <path
-                          d="M7.875 15.212c0-1.222.98-2.212 2.188-2.212h.874c1.21 0 2.188.99 2.188 2.211v11.27c0 1.22-.98 2.211-2.187 2.211h-.876c-.58 0-1.136-.233-1.546-.647a2.22 2.22 0 0 1-.641-1.564zM0 20.519c0-1.222.98-2.211 2.188-2.211h.874c1.21 0 2.188.99 2.188 2.211v5.962c0 1.22-.98 2.211-2.187 2.211h-.876c-.58 0-1.136-.233-1.546-.647A2.22 2.22 0 0 1 0 26.48z"
-                        />
-                        <path
-                          d="M16.5 26.5V6.828l-2.086 2.086a2 2 0 1 1-2.828-2.828l5.5-5.5.151-.138a2 2 0 0 1 2.677.138l5.5 5.5a2 2 0 1 1-2.828 2.828L20.5 6.828V26.5a2 2 0 1 1-4 0"
+                          fillRule="evenodd"
+                          d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.675-7.69a1.762 1.762 0 0 1 0-1.113ZM17.25 12a5.25 5.25 0 1 1-10.5 0 5.25 5.25 0 0 1 10.5 0Z"
+                          clipRule="evenodd"
                         />
                       </svg>
-                    </span>
-                  </Link>
+                      {t('guard')}
+                    </Link>
+                    <Link
+                      href="/kursused/turvatootaja"
+                      className={`flex items-center gap-3 py-4 text-2xl font-medium transition-colors ${
+                        isActive('/kursused/turvatootaja')
+                          ? '!text-course-security-600'
+                          : '!text-gray-900'
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="size-6 shrink-0 !text-course-security-600"
+                        aria-hidden
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M11.484 2.17a.75.75 0 0 1 1.032 0 11.209 11.209 0 0 0 7.877 3.08.75.75 0 0 1 .722.515 12.74 12.74 0 0 1 .635 3.985c0 5.942-4.064 10.933-9.563 12.348a.749.749 0 0 1-.374 0C6.314 20.683 2.25 15.692 2.25 9.75c0-1.39.223-2.73.635-3.985a.75.75 0 0 1 .722-.516l.143.001c2.996 0 5.718-1.17 7.734-3.08ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75ZM12 15a.75.75 0 0 0-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 0 0 .75-.75v-.008a.75.75 0 0 0-.75-.75H12Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {t('security')}
+                    </Link>
+                    <Link
+                      href="/kursused/turvajuht"
+                      className={`flex items-center gap-3 py-4 text-2xl font-medium transition-colors ${
+                        isActive('/kursused/turvajuht') ? '!text-course-lead-600' : '!text-gray-900'
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        className="size-6 shrink-0 !text-course-lead-600"
+                        aria-hidden
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M12 2.25a.75.75 0 0 1 .75.75v.756a49.106 49.106 0 0 1 9.152 1 .75.75 0 0 1-.152 1.485h-1.918l2.474 10.124a.75.75 0 0 1-.375.84A6.723 6.723 0 0 1 18.75 18a6.723 6.723 0 0 1-3.181-.795.75.75 0 0 1-.375-.84l2.474-10.124H12.75v13.28c1.293.076 2.534.343 3.697.776a.75.75 0 0 1-.262 1.453h-8.37a.75.75 0 0 1-.262-1.453c1.162-.433 2.404-.7 3.697-.775V6.24H6.332l2.474 10.124a.75.75 0 0 1-.375.84A6.723 6.723 0 0 1 5.25 18a6.723 6.723 0 0 1-3.181-.795.75.75 0 0 1-.375-.84L4.168 6.241H2.25a.75.75 0 0 1-.152-1.485 49.105 49.105 0 0 1 9.152-1V3a.75.75 0 0 1 .75-.75Zm4.878 13.543 1.872-7.662 1.872 7.662h-3.744Zm-9.756 0L5.25 8.131l-1.872 7.662h3.744Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      {t('securityLead')}
+                    </Link>
+                    <Link
+                      href="/kursused/taiendope"
+                      className={`block py-4 text-2xl font-medium transition-colors ${
+                        isActive('/kursused/taiendope') ? '!text-primary-600' : '!text-gray-900'
+                      }`}
+                    >
+                      {t('refresher')}
+                    </Link>
+                    <Link
+                      href="/kursused/koolitus"
+                      className={`block py-4 text-2xl font-medium transition-colors ${
+                        isActive('/kursused/koolitus') ? '!text-primary-600' : '!text-gray-900'
+                      }`}
+                    >
+                      {t('training')}
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              <Link
+                href="/koolituskalender"
+                className={`px-6 py-4 text-2xl font-medium transition-colors ${
+                  isActive('/koolituskalender') ? 'text-primary-600' : 'text-gray-900'
+                }`}
+              >
+                {t('calendar')}
+              </Link>
+              <Link
+                href="/keskusest"
+                className={`px-6 py-4 text-2xl font-medium transition-colors ${
+                  isActive('/keskusest') ? 'text-primary-600' : 'text-gray-900'
+                } ${locale === 'ru' ? 'whitespace-nowrap' : ''}`}
+              >
+                {t('about')}
+              </Link>
+              <Link
+                href="/kontaktid"
+                className={`px-6 py-4 text-2xl font-medium transition-colors ${
+                  isActive('/kontaktid') ? 'text-primary-600' : 'text-gray-900'
+                }`}
+              >
+                {t('contacts')}
+              </Link>
+            </div>
+
+            <div className="relative z-10 shrink-0 bg-white p-6 pb-[max(1.5rem,env(safe-area-inset-bottom,0px))]">
+              <div className="space-y-5">
+                <Link
+                  href="/registreerimine"
+                  className="btn-press flex w-full items-center justify-center rounded-lg bg-primary-600 px-6 py-3.5 text-center text-base font-semibold text-white shadow-sm"
+                >
+                  {t('register')}
+                </Link>
+                <div className="flex items-center justify-center gap-1.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => router.replace(pathname ?? '/', { locale: 'et' })}
+                    className={`px-1 py-0 font-semibold text-sm uppercase tracking-wide transition-colors duration-200 ${
+                      locale === 'et' ? 'text-primary-600' : 'text-primary-600/50'
+                    }`}
+                    aria-pressed={locale === 'et'}
+                    aria-label="Eesti keel"
+                  >
+                    EST
+                  </button>
+                  <span className="text-primary-600 font-semibold select-none" aria-hidden="true">
+                    |
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => router.replace(pathname ?? '/', { locale: 'ru' })}
+                    className={`px-1 py-0 font-semibold text-sm uppercase tracking-wide transition-colors duration-200 ${
+                      locale === 'ru' ? 'text-primary-600' : 'text-primary-600/50'
+                    }`}
+                    aria-pressed={locale === 'ru'}
+                    aria-label="Vene keel"
+                  >
+                    RUS
+                  </button>
                 </div>
               </div>
             </div>
-            <Link
-              href="/koolituskalender"
-              className={`block px-6 py-2 font-medium ${
-                isActive('/koolituskalender') ? 'text-primary-600' : 'text-gray-700'
-              }`}
-            >
-              Kalender
-            </Link>
-            <Link
-              href="/keskusest"
-              className={`block px-6 py-2 font-medium ${
-                isActive('/keskusest') ? 'text-primary-600' : 'text-gray-700'
-              }`}
-            >
-              Keskusest
-            </Link>
-            <Link
-              href="/kontaktid"
-              className={`block px-6 py-2 font-medium ${
-                isActive('/kontaktid') ? 'text-primary-600' : 'text-gray-700'
-              }`}
-            >
-              Kontaktid
-            </Link>
-            <Link
-              href="/registreerimine"
-              className="ml-6 mt-2 mb-3 px-6 py-3 bg-primary-600 text-white rounded-lg font-semibold shadow-sm hover:bg-primary-700 transition-all duration-300 hover:shadow-lg text-center"
-              style={{ backgroundColor: '#177AE5' }}
-            >
-              Registreeru
-            </Link>
-            <div className="flex items-center gap-1.5 px-6 py-2 border-t border-gray-100">
-              <button
-                type="button"
-                onClick={() => setLang('est')}
-                className={`px-1 py-0 font-semibold text-sm uppercase tracking-wide transition-colors duration-200 ${
-                  lang === 'est' ? 'text-primary-600' : 'text-primary-600/50'
-                }`}
-                aria-pressed={lang === 'est'}
-                aria-label="Eesti keel"
-              >
-                EST
-              </button>
-              <span className="text-primary-600 font-semibold select-none" aria-hidden="true">|</span>
-              <button
-                type="button"
-                onClick={() => setLang('rus')}
-                className={`px-1 py-0 font-semibold text-sm uppercase tracking-wide transition-colors duration-200 ${
-                  lang === 'rus' ? 'text-primary-600' : 'text-primary-600/50'
-                }`}
-                aria-pressed={lang === 'rus'}
-                aria-label="Vene keel"
-              >
-                RUS
-              </button>
-            </div>
           </div>
-        </div>
-      </div>
-    </nav>
+          </div>,
+          document.body
+        )}
+    </>
   )
 }

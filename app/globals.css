@@ -41,19 +41,42 @@ h1, h2, h3, h4, h5, h6 {
   .text-balance {
     text-wrap: balance;
   }
-  
-  
+
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out;
   }
-  
+
   .animate-slide-up {
     animation: slideUp 0.6s ease-out;
   }
-  
+
   .animate-scale-in {
     animation: scaleIn 0.4s ease-out;
   }
+}
+
+@layer components {
+  /**
+   * Mobile drawer: keep link colors from utilities (some browsers / extensions
+   * still paint `a` like default links; preflight uses inherit only when no utility wins).
+   */
+  #mobile-navigation a {
+    text-decoration: none;
+  }
+
+  /** Horizontal inset from viewport — matches footer `px-8` (2rem). */
+  .page-gutter-x {
+    @apply px-8;
+  }
+
+  .btn-press {
+    @apply active:scale-[0.97] transition-transform duration-150;
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-primary-300;
+  }
+
 }
 
 @keyframes fadeIn {
