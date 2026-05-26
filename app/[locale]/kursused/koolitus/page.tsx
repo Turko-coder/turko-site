@@ -200,13 +200,30 @@ export default function Koolitus() {
           </ul>
         </section>
 
-        {/* 4. Õppekeskkond ja vorm */}
+        {/* 4. Õppekeskkond */}
         <section className="mb-9 md:mb-12" aria-labelledby="oppekeskkond-heading">
-          <h2 id="oppekeskkond-heading" className="text-2xl font-bold mb-6 text-gray-900">
+          <h2 id="oppekeskkond-heading" className="text-2xl font-bold mb-8 text-gray-900">
             {t('environmentTitle')}
           </h2>
-          <p className="mb-8 leading-relaxed text-gray-600">{t('environmentP1')}</p>
-          <div className="w-full min-w-0">
+
+          {/* Block 1: Õppeklassid / Учебные помещения */}
+          <h3 className="text-lg font-bold mb-3 text-gray-900">{t('envPremisesTitle')}</h3>
+          <p className="mb-3 leading-relaxed text-gray-600">
+            {t.rich('envPremisesP1', {
+              addressLink: (chunks) => (
+                <Link
+                  href="/kontaktid?city=tallinn"
+                  className="font-medium text-primary-600 hover:underline"
+                >
+                  {chunks}
+                </Link>
+              ),
+            })}
+          </p>
+          <p className="mb-6 leading-relaxed text-gray-600">{t('envPremisesP2')}</p>
+
+          {/* Photo carousel */}
+          <div className="w-full min-w-0 mb-6">
             <div
               ref={carouselRef}
               className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -246,7 +263,22 @@ export default function Koolitus() {
               ))}
             </div>
           </div>
-          <p className="mt-8 leading-relaxed text-gray-600">{t('environmentP2')}</p>
+
+          <p className="mb-4 leading-relaxed text-gray-600">{t('envEquipmentP1')}</p>
+          <p className="mb-4 leading-relaxed text-gray-600">{t('envCateringP1')}</p>
+          <p className="mb-5 leading-relaxed text-gray-600">{t('envTransportP1')}</p>
+          <div className="mb-10 overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+            <img
+              src="/Illustarations/Turko_map.jpg"
+              alt="Turko õppekeskuse kaart / Карта учебного центра Turko"
+              className="w-full h-auto"
+            />
+          </div>
+
+          {/* Block 2: Õppevorm / Формат обучения */}
+          <h3 className="text-lg font-bold mb-3 text-gray-900">{t('envFormatTitle')}</h3>
+          <p className="mb-4 leading-relaxed text-gray-600">{t('envGroupsP1')}</p>
+          <p className="leading-relaxed text-gray-600">{t('envOnlineP1')}</p>
         </section>
 
       </div>

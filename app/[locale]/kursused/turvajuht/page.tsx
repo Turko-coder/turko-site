@@ -127,8 +127,7 @@ export default function TurvajuhtTase5() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div className="flex-1">
-                  <span className="text-gray-900 font-medium">{t('estonianLang')}</span>
-                  <span className="ml-2 inline-block px-2 py-0.5 bg-course-lead-50 text-course-lead-800 rounded text-xs font-semibold">B2</span>
+                  <span className="text-gray-900 font-medium">{t('secondaryEducation')}</span>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -136,15 +135,7 @@ export default function TurvajuhtTase5() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <div className="flex-1">
-                  <span className="text-gray-900 font-medium">{t('basicEducation')}</span>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <svg className="w-6 h-6 text-course-lead-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <div className="flex-1">
-                  <span className="text-gray-900 font-medium">{t('citizenship')}</span>
+                  <span className="text-gray-900 font-medium">{t('citizenshipEstoniaOnly')}</span>
                 </div>
               </div>
               <div className="flex items-start gap-3">

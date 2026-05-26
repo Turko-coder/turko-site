@@ -9,7 +9,7 @@ const locations = [
     id: 'tallinn',
     name: 'Tallinn',
     lines: ['Väike pala 2', '11415', 'Eesti'],
-    mapQuery: 'Väike+pala+2,+Tallinn,+11415,+Eesti',
+    mapQuery: 'Turko+%C3%95ppekeskus+O%C3%9C,+V%C3%A4ike-Paala+tn+2,+Tallinn',
   },
   {
     id: 'tartu',
