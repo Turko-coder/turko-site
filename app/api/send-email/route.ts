@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
     await Promise.all([
       transporter.sendMail({
         from: `"Turko Koolitus" <${gmailUser}>`,
-        to: 'filipprochenkov@gmail.com',
+        to: 'turko@hot.ee',
         replyTo: data.email,
         subject,
         text: buildPlainText(data),
