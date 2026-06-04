@@ -14,8 +14,8 @@ const locations = [
   {
     id: 'tartu',
     name: 'Tartu',
-    lines: ['Kalda tee 28', '50704', 'Eesti'],
-    mapQuery: 'Kalda+tee+28,+Tartu,+50704,+Eesti',
+    lines: ['Imatsalu tn 5', '50704', 'Eesti'],
+    mapQuery: 'Imatsalu+tn+5,+Tartu,+Eesti',
   },
   {
     id: 'narva',
@@ -64,8 +64,8 @@ function KontaktidContent() {
           </p>
           <p>
             <strong>{t('emailLabel')}</strong>{' '}
-            <a href="mailto:info@turvakoolitus.eu" className="text-primary-600 hover:text-primary-800">
-              info@turvakoolitus.eu
+            <a href="mailto:turko@hot.ee" className="text-primary-600 hover:text-primary-800">
+              turko@hot.ee
             </a>
           </p>
         </div>

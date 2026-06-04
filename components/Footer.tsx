@@ -51,7 +51,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <p className="text-xs text-gray-500 font-normal">{t('email')}</p>
-                  <p className="text-sm text-gray-600 mt-1">info@turko.ee</p>
+                  <p className="text-sm text-gray-600 mt-1">turko@hot.ee</p>
                 </li>
                 <li>
                   <p className="text-xs text-gray-500">{t('address')}</p>
