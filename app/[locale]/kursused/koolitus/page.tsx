@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { ValvetootajaIllustration } from '@/components/illustrations/ValvetootajaIllustration'
@@ -268,10 +269,13 @@ export default function Koolitus() {
           <p className="mb-4 leading-relaxed text-gray-600">{t('envCateringP1')}</p>
           <p className="mb-5 leading-relaxed text-gray-600">{t('envTransportP1')}</p>
           <div className="mb-10 overflow-hidden rounded-xl border border-gray-200 shadow-sm">
-            <img
+            <Image
               src="/Illustarations/Turko_map.jpg"
               alt="Turko õppekeskuse kaart / Карта учебного центра Turko"
+              width={1200}
+              height={800}
               className="w-full h-auto"
+              quality={75}
             />
           </div>
 
