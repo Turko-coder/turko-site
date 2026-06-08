@@ -1,7 +1,6 @@
 import { MetadataRoute } from 'next'
 
 const baseUrl = 'https://turvakoolitus.eu'
-const locales = ['et', 'ru']
 
 const pages = [
   '',
@@ -10,7 +9,6 @@ const pages = [
   '/kursused/turvatootaja-tase-4',
   '/kursused/turvajuht-tase-5',
   '/kursused/taiendope',
-  '/kursused/oppekavad',
   '/kursused/koolituskalender',
   '/kontaktid',
   '/paring',
@@ -21,7 +19,6 @@ const pages = [
   '/meiest/oppetoo',
   '/koolituskalender',
   '/treeningud',
-  '/keskusest',
   '/koolitus',
 ]
 
@@ -29,10 +26,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const entries: MetadataRoute.Sitemap = []
 
   for (const page of pages) {
-    for (const locale of locales) {
+    for (const locale of ['et', 'ru']) {
       entries.push({
         url: `${baseUrl}/${locale}${page}`,
-        lastModified: new Date(),
+        lastModified: '2026-06-08',
         changeFrequency: page === '' ? 'weekly' : 'monthly',
         priority: page === '' ? 1 : 0.8,
       })
