@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <url><loc>https://turvakoolitus.eu/et</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/kursused</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/kursused</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/kursused/valvetootaja-tase-3</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/kursused/valvetootaja-tase-3</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/kursused/turvatootaja-tase-4</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/kursused/turvatootaja-tase-4</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/kursused/turvajuht-tase-5</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/kursused/turvajuht-tase-5</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/kursused/taiendope</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/kursused/taiendope</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/kursused/koolituskalender</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/kursused/koolituskalender</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/koolituskalender</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/koolituskalender</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/kontaktid</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/kontaktid</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/paring</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/paring</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/meiest</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/meiest</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/meiest/tegevuse-alus</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/meiest/tegevuse-alus</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/meiest/noustamine</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/meiest/noustamine</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/meiest/partnerid</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/meiest/partnerid</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/meiest/oppetoo</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/meiest/oppetoo</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/treeningud</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/treeningud</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+  <url><loc>https://turvakoolitus.eu/et/koolitus</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://turvakoolitus.eu/ru/koolitus</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+
+</urlset>
