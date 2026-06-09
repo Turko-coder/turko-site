@@ -55,7 +55,7 @@
 - В Zone.ee сменены NS-серверы: `ns.fiber.ee` / `ns2.fiber.ee` → `athena.ns.cloudflare.com` / `nick.ns.cloudflare.com`
 - Переключение подтверждено 09.06.2026
 
-### 6. Sitemap ✅ РЕШЕНО (08.06.2026)
+### 6. Sitemap ⏳ В ПРОЦЕССЕ (технически исправлено, ждём GSC)
 
 **Проблема:** `/sitemap.xml` возвращал 500 на Vercel.
 
@@ -122,7 +122,7 @@ i18n/routing.ts            — locales: ['et', 'ru'], defaultLocale: 'et'
 
 ## Нерешённые задачи
 
-1. ~~**Sitemap 500**~~ — ✅ Решено 08.06.2026. Ожидаем подтверждения от Google Search Console (2–3 дня)
+1. **Sitemap GSC** — ⏳ Технически исправлено (08.06.2026), файл отдаёт валидный XML. Ожидаем пока Google Search Console подтвердит статус «Успешно» (краулер ещё не обработал, повторно отправлен 09.06.2026)
 2. ~~**Перенос DNS на Cloudflare**~~ — ✅ Сделано 09.06.2026
 3. **Почта** — настроить Google Workspace для `info@turvakoolitus.eu`:
    - Зарегистрироваться на workspace.google.com (тариф Business Starter, ~6€/мес)
