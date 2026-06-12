@@ -163,11 +163,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const gmailUser = process.env.GMAIL_USER
-    const gmailPass = process.env.GMAIL_APP_PASSWORD
+    const brevoUser = process.env.BREVO_USER
+    const brevoKey = process.env.BREVO_SMTP_KEY
 
-    if (!gmailUser || !gmailPass) {
-      console.error('Missing GMAIL_USER or GMAIL_APP_PASSWORD env variables')
+    if (!brevoUser || !brevoKey) {
+      console.error('Missing BREVO_USER or BREVO_SMTP_KEY env variables')
       return NextResponse.json(
         { error: 'E-posti seadistus puudub serveris.' },
         { status: 500 }
@@ -175,10 +175,12 @@ export async function POST(request: NextRequest) {
     }
 
     const transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp-relay.brevo.com',
+      port: 587,
+      secure: false,
       auth: {
-        user: gmailUser,
-        pass: gmailPass,
+        user: brevoUser,
+        pass: brevoKey,
       },
     })
 
@@ -188,15 +190,15 @@ export async function POST(request: NextRequest) {
 
     await Promise.all([
       transporter.sendMail({
-        from: `"Turko Koolitus" <${gmailUser}>`,
-        to: 'turko@hot.ee',
+        from: '"Turko Koolitus" <info@turvakoolitus.eu>',
+        to: 'info@turvakoolitus.eu',
         replyTo: data.email,
         subject,
         text: buildPlainText(data),
         html: buildEmailHtml(data),
       }),
       transporter.sendMail({
-        from: `"Turko Koolitus" <${gmailUser}>`,
+        from: '"Turko Koolitus" <info@turvakoolitus.eu>',
         to: data.email,
         subject: 'Teie registreerimine on vastu võetud',
         text: buildConfirmationPlainText(data),
