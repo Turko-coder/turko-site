@@ -22,7 +22,7 @@
 ### Важно
 - **⚠️ Expiry Date Compic: 01.07.2026** — **ОТМЕНИТЬ ДО ЭТОЙ ДАТЫ**
 - **Автопродление у Compic включено** — если не отменить до 01.07, спишут деньги
-- Почта `info@turvakoolitus.eu` пока ещё на Compic — **сначала настроить Google Workspace, потом отменять Compic**
+- Почта `info@turvakoolitus.eu` пока ещё на Compic — **сначала настроить Cloudflare Email Routing, потом отменять Compic**
 
 ---
 
@@ -55,20 +55,35 @@
 - В Zone.ee сменены NS-серверы: `ns.fiber.ee` / `ns2.fiber.ee` → `athena.ns.cloudflare.com` / `nick.ns.cloudflare.com`
 - Переключение подтверждено 09.06.2026
 
-### 6. Sitemap ⏳ В ПРОЦЕССЕ (технически исправлено, ждём GSC)
+### 6. Sitemap ✅ Исправлено (12.06.2026)
 
 **Проблема:** `/sitemap.xml` возвращал 500 на Vercel.
 
 **Причина:** `next-intl ^4.9.0` на Vercel Edge Runtime неправильно обрабатывал сложный matcher с явным списком расширений (`.*\\.(?:svg|png|...|xml|...)`). Middleware перехватывал `/sitemap.xml`, не находил валидный locale-префикс и падал с 500.
 
-**Что сделано:**
+**Что сделано (08–12.06.2026):**
 1. `middleware.ts` — matcher заменён на официальный паттерн next-intl 4.x:
    `'/((?!api|_next|_vercel|.*\\..*).*)'`
-   Ключевое изменение: `.*\\..*` исключает **любой путь с точкой** (т.е. любой файл с расширением) — проще и надёжнее явного списка.
-2. `app/sitemap.ts` — создан статический route handler (надёжнее чем `public/sitemap.xml`, т.к. это явный Next.js маршрут без конфликтов с Edge).
+2. `app/sitemap.ts` — создан Next.js route handler (надёжнее чем `public/sitemap.xml`).
 3. `app/robots.ts` — создан, разрешает всем краулерам и указывает на sitemap.
-4. Sitemap подтверждён в браузере: `https://turvakoolitus.eu/sitemap.xml` отдаёт валидный XML с 34 URL.
-5. Sitemap отправлен в Google Search Console повторно (09.06.2026) — ожидаем обработки.
+4. Sitemap подтверждён в браузере: `https://turvakoolitus.eu/sitemap.xml` отдаёт валидный XML.
+5. Sitemap отправлен в Google Search Console повторно (09.06.2026).
+
+**Аудит и исправление URL в sitemap (12.06.2026):**
+- **Исправлены неверные slugs:** `valvetootaja-tase-3` → `valvetootaja`, `turvatootaja-tase-4` → `turvatootaja`, `turvajuht-tase-5` → `turvajuht`
+- **Удалены несуществующие страницы:** `/meiest`, `/meiest/noustamine`, `/meiest/partnerid`, `/treeningud`
+- **Удалены redirect-заглушки** (имеют page.tsx но делают `redirect()`): `/kursused`, `/koolitus`, `/kursused/koolituskalender`, `/meiest/keskusest`, `/meiest/kontaktid`
+- **Добавлены реальные страницы:** `/kursused/koolitus`, `/kursused/oppekavad-oppetoo`, `/keskusest`
+- **Итог:** 13 реальных страниц × 2 locale = **26 URL** в sitemap
+- **Все 13 ET-страниц проверены вручную — возвращают 200** (live site + local dev)
+- **Исправлены redirects в `next.config.js`:** старые `-tase-` URL теперь ведут правильно (`/et/kursused/valvetootaja` и т.д.) вместо 404
+
+**Redirect-заглушки в коде** (намеренно, не трогать):
+- `kursused/page.tsx` → `/kursused/koolitus`
+- `koolitus/page.tsx` → `/kursused/koolitus`
+- `kursused/koolituskalender/page.tsx` → `/koolituskalender`
+- `meiest/keskusest/page.tsx` → `/keskusest`
+- `meiest/kontaktid/page.tsx` → `/kontaktid`
 
 ---
 
@@ -122,26 +137,83 @@ i18n/routing.ts            — locales: ['et', 'ru'], defaultLocale: 'et'
 
 ## Нерешённые задачи
 
-1. **Sitemap GSC** — ⏳ Технически исправлено (08.06.2026), файл отдаёт валидный XML. Ожидаем пока Google Search Console подтвердит статус «Успешно» (краулер ещё не обработал, повторно отправлен 09.06.2026)
+1. **Sitemap GSC** — ⏳ URL исправлены и проверены (12.06.2026), 26 URL, все страницы 200. После деплоя — повторно отправить sitemap в GSC и ждать переиндексации
 2. ~~**Перенос DNS на Cloudflare**~~ — ✅ Сделано 09.06.2026
-3. **Почта** — настроить Google Workspace для `info@turvakoolitus.eu`:
-   - Зарегистрироваться на workspace.google.com (тариф Business Starter, ~6€/мес)
-   - Подтвердить домен через TXT-запись в Cloudflare
-   - Добавить MX-записи Google в Cloudflare
-   - Добавить SPF / DKIM записи
-   - Проверить что почта работает
-4. **Отмена Compic** — ⚠️ до 01.07.2026. Отменять ТОЛЬКО после того как Google Workspace заработает
+3. ~~**Почта**~~ — ✅ Сделано 09.06.2026
+   - ✅ Cloudflare Email Routing включён, правило `info@turvakoolitus.eu` → `eduard.rodchenkov@gmail.com` активно
+   - ✅ Старые MX/SPF записи Compic удалены, Cloudflare MX записи добавлены
+   - ✅ Brevo: домен `turvakoolitus.eu` верифицирован, DKIM + DMARC настроены
+   - ✅ Gmail клиента: "Отправлять как" `info@turvakoolitus.eu` через `smtp-relay.brevo.com:587 TLS`
+   - ✅ Gmail фильтр: письма на `info@turvakoolitus.eu` → ярлык `info@turvakoolitu...`, минуя Входящие
+   - ✅ Входящие и исходящие протестированы и работают
+4. **Отмена Compic** — ⚠️ до 01.07.2026. Почта перенесена, можно отменять через 3-5 дней если всё стабильно
+5. ~~**Письма с сайта в спам**~~ — ✅ Исправлено 12.06.2026
+   - Транспорт заменён с Gmail SMTP на Brevo SMTP (`smtp-relay.brevo.com:587`)
+   - `from` изменён на `info@turvakoolitus.eu` (DKIM-подписанный домен)
+   - Уведомления владельцу теперь идут на `info@turvakoolitus.eu` вместо `turko@hot.ee`
+   - Env-переменные: `BREVO_USER` + `BREVO_SMTP_KEY` добавлены в Vercel
+   - Протестировано: mail-tester.com — **7.6/10**, DKIM/SPF/DMARC ✅, не в чёрных списках ✅
+   - Ручные письма с `info@turvakoolitus.eu` доходят во Входящие (протестировано на университетской почте) ✅
+   - Google Workspace не нужен — текущая схема бесплатна и полностью функциональна
 
 ---
 
-## Почта — текущая ситуация
+## Почта — текущая ситуация ✅ (09.06.2026)
 
 | Адрес | Статус |
 |---|---|
-| `turko@hot.ee` | Платный, неудобный сервис online.ee — клиент хочет отказаться |
-| `info@turvakoolitus.eu` | Хостится на Compic (IP 188.92.160.14). Настроена как "Отправить как" в Gmail, но SMTP не работает (ошибка при отправке). MX → `mail.turvakoolitus.eu` |
+| `turko@hot.ee` | Платный, неудобный сервис online.ee — планируется плавная миграция на `info@turvakoolitus.eu` |
+| `info@turvakoolitus.eu` | ✅ Работает через Cloudflare Email Routing + Brevo SMTP |
 
-**Решение:** Google Workspace — `info@turvakoolitus.eu` станет полноценным Gmail-ящиком.
+**Итоговая схема (бесплатно):**
+- **Входящие:** письмо на `info@turvakoolitus.eu` → Cloudflare Email Routing → пересылка на `eduard.rodchenkov@gmail.com`
+- **Исходящие:** Gmail клиента → "Отправлять как" `info@turvakoolitus.eu` → Brevo SMTP (`smtp-relay.brevo.com:587 TLS`)
+- **Сортировка:** Gmail фильтр автоматически кладёт рабочие письма в ярлык `info@turvakoolitu...`
+- **DNS:** DKIM + DMARC настроены через Brevo, Cloudflare MX записи активны
+
+---
+
+## Миграция почты: turko@hot.ee → info@turvakoolitus.eu
+
+**Обсуждено 09.06.2026.** Клиент давно пользуется платным и неудобным сервисом online.ee (`turko@hot.ee`). После запуска `info@turvakoolitus.eu` — выполнить плавный переезд.
+
+### Выбранная стратегия: плавная миграция с подстраховкой
+
+**Шаг 1 — Переадресация (forwarding)**
+Настроить автоматическую пересылку всех входящих с `turko@hot.ee` на `info@turvakoolitus.eu`.
+Результат: работаем только в новом ящике, но ни одно письмо не теряется. Срочности нет.
+
+**Шаг 2 — Автоответ на старом ящике**
+Поставить автоответ на `turko@hot.ee`:
+> "Наш новый адрес: info@turvakoolitus.eu. Пожалуйста, обновите свои контакты."
+
+Результат: контакты и сервисы узнают новый адрес органически, без ручного обхода.
+
+**Шаг 3 — Перенос архива писем**
+Экспортировать всю переписку и важные данные из `turko@hot.ee` в новый ящик (IMAP-синхронизация или экспорт `.mbox`). Делается один раз.
+
+**Шаг 4 — Рассылка уведомления контактам**
+Одно письмо всем контактам из адресной книги: "Мы переехали на новый адрес."
+
+**Шаг 5 — Пассивное обновление сервисов**
+Критически важные (банк, налоговая, ключевые поставщики) — обновить сразу. Остальные — при очередном входе. Переадресация страхует от потерь.
+
+### Как найти, к каким сервисам привязан turko@hot.ee
+
+При наличии доступа к ящику:
+- Поиск по словам: `welcome`, `registered`, `confirm`, `invoice`, `password`, `unsubscribe`, `arve`, `tellimus`
+- Сортировка всех писем по отправителю — видны все уникальные домены
+- Папка "Отправленные" — с кем велась переписка
+- Поиск по `reset password` / `forgot password` — находит все сервисы с аккаунтами
+
+Группировка результатов:
+| Приоритет | Что | Срок |
+|---|---|---|
+| Критично | Банк, налоговая, гос. сервисы | В течение недели |
+| Важно | Поставщики, клиенты, платные сервисы | В течение месяца |
+| Остальное | Рассылки, второстепенное | Обновится само через forwarding |
+
+**Итог:** старый ящик можно держать активным 1-2 года, пока весь поток не переместится на новый. После — просто не продлевать подписку на online.ee.
 
 ---
 
