@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@marsidev/react-turnstile": "^1.5.3",
     "next": "^14.0.0",
     "next-intl": "^4.9.0",
     "nodemailer": "^8.0.4",

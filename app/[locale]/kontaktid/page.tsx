@@ -64,8 +64,8 @@ function KontaktidContent() {
           </p>
           <p>
             <strong>{t('emailLabel')}</strong>{' '}
-            <a href="mailto:turko@hot.ee" className="text-primary-600 hover:text-primary-800">
-              turko@hot.ee
+            <a href="mailto:info@turvakoolitus.eu" className="text-primary-600 hover:text-primary-800">
+              info@turvakoolitus.eu
             </a>
           </p>
         </div>

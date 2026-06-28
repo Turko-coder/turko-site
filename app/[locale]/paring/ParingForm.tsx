@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo, useRef } from 'react'
+import { Turnstile } from '@marsidev/react-turnstile'
 import { useRouter } from '@/i18n/navigation'
 import { useSearchParams } from 'next/navigation'
 import {
@@ -56,6 +57,7 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
 
   type DropdownKey = 'course' | 'city' | 'month' | 'date' | 'language' | 'mode' | null
   const [openDropdown, setOpenDropdown] = useState<DropdownKey>(null)
@@ -186,7 +188,7 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
       const res = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, turnstileToken }),
       })
 
       if (!res.ok) {
@@ -775,9 +777,17 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
               </div>
             )}
 
+            <Turnstile
+              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+              onSuccess={(token) => setTurnstileToken(token)}
+              onExpire={() => setTurnstileToken(null)}
+              onError={() => setTurnstileToken(null)}
+              options={{ theme: 'light', language: locale === 'ru' ? 'ru' : 'et' }}
+            />
+
             <button
               type="submit"
-              disabled={submitting}
+              disabled={submitting || !turnstileToken}
               className="w-full bg-primary-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-700 transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed btn-press"
             >
               {submitting ? t('submitting') : t('submit')}

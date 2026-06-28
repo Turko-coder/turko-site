@@ -12,6 +12,7 @@ type RegistrationPayload = {
   email?: string
   phone?: string
   message?: string
+  turnstileToken?: string
 }
 
 function formatLearningLanguage(lang?: string) {
@@ -161,6 +162,32 @@ export async function POST(request: NextRequest) {
         { error: 'Nimi, e-post ja telefon on kohustuslikud väljad.' },
         { status: 400 }
       )
+    }
+
+    const turnstileSecret = process.env.TURNSTILE_SECRET_KEY
+    if (turnstileSecret) {
+      const token = data.turnstileToken
+      if (!token) {
+        return NextResponse.json(
+          { error: 'Turvakontroll ebaõnnestus. Palun laadige leht uuesti.' },
+          { status: 400 }
+        )
+      }
+      const verifyRes = await fetch(
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ secret: turnstileSecret, response: token }),
+        }
+      )
+      const verifyData = await verifyRes.json()
+      if (!verifyData.success) {
+        return NextResponse.json(
+          { error: 'Turvakontroll ebaõnnestus. Palun proovige uuesti.' },
+          { status: 400 }
+        )
+      }
     }
 
     const brevoUser = process.env.BREVO_USER

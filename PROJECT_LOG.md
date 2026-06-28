@@ -5,8 +5,8 @@
 
 - **Домен:** https://turvakoolitus.eu
 - **Стек:** Next.js 14, TypeScript, Tailwind CSS, next-intl (ET/RU), nodemailer (Gmail SMTP)
-- **GitHub репо:** https://github.com/filipprochenkov-netizen/turko-site
-- **Временный Vercel URL:** https://turko-site.vercel.app
+- **GitHub репо:** https://github.com/Turko-coder/turko-site (перенесён 13.06.2026)
+- **Vercel URL:** https://turko-site.vercel.app (деплой пока на аккаунте Филиппа, переносится)
 
 ---
 
@@ -15,14 +15,14 @@
 | Роль | Сервис | Детали |
 |---|---|---|
 | Регистратор домена | Zone.ee | Платит клиент, ~раз в год |
-| DNS | ~~Compic / fiber.ee~~ → **Cloudflare** | ✅ Переключено 09.06.2026. NS: `athena.ns.cloudflare.com`, `nick.ns.cloudflare.com` |
-| Хостинг нового сайта | Vercel (бесплатный план) | https://vercel.com — деплой автоматический из GitHub |
-| Старый хостинг (отменить!) | Compic OÜ | compic.ee, IP: 188.92.160.14, сервер h6.compic.ee |
+| DNS | **Cloudflare (аккаунт клиента)** | ✅ Перенесён на клиента 13.06.2026. NS: новые от аккаунта клиента |
+| Хостинг нового сайта | Vercel | ⚠️ Пока на аккаунте Филиппа, переносится на аккаунт клиента |
+| Старый хостинг (отменить!) | Compic OÜ | compic.ee — **ОТМЕНИТЬ ДО 01.07.2026** |
 
 ### Важно
 - **⚠️ Expiry Date Compic: 01.07.2026** — **ОТМЕНИТЬ ДО ЭТОЙ ДАТЫ**
 - **Автопродление у Compic включено** — если не отменить до 01.07, спишут деньги
-- Почта `info@turvakoolitus.eu` пока ещё на Compic — **сначала настроить Cloudflare Email Routing, потом отменять Compic**
+- Почта настроена через Cloudflare Email Routing (аккаунт клиента) ✅
 
 ---
 
@@ -138,8 +138,18 @@ i18n/routing.ts            — locales: ['et', 'ru'], defaultLocale: 'et'
 ## Нерешённые задачи
 
 1. **Sitemap GSC** — ⏳ URL исправлены и проверены (12.06.2026), 26 URL, все страницы 200. После деплоя — повторно отправить sitemap в GSC и ждать переиндексации
-2. ~~**Перенос DNS на Cloudflare**~~ — ✅ Сделано 09.06.2026
-3. ~~**Почта**~~ — ✅ Сделано 09.06.2026
+2. **Перенос почты turko@hot.ee** — ✅ / ⏳ частично (14.06.2026)
+   - ✅ Архив перенесён через imapsync: Входящие (~395), Отправленные (~655), Архив (63) — все в Gmail клиента
+   - ❌ Пересылка turko@hot.ee → info@ — Online.ee (Fjordmail) официально не поддерживает ("We do not offer email forwarding")
+   - ⏳ Автоответ на turko@hot.ee — отложено, включить после подтверждения переноса писем
+   - ⏳ Список сервисов и обновление адреса — составить вместе с клиентом. Поиск в turko@hot.ee по: `emta.ee`, `töötukassa`, `rik.ee`, `swedbank`, `seb.ee`, `lhv.ee`, `zone.ee`, `compic`, `arve`, `tellimus`, `leping`, `invoice`, `subscription`
+   - ⚠️ Пока пересылки нет — клиент должен проверять turko@hot.ee раз в неделю до обновления адреса в сервисах
+3. **Google Business Profile (Äriprofiil)** — ✅ Настроен (18.06.2026)
+   - Профиль создан на аккаунте клиента (`eduard.rodchenkov@gmail.com`)
+   - Описание на эстонском с ключевыми словами (turvakoolitus, valvetöötaja, turvatöötaja, turvajuht)
+   - ⏳ **Фотографии** — добавить позже: фото входа/офиса, учебного класса, логотип, фото с занятий
+4. ~~**Перенос DNS на Cloudflare**~~ — ✅ Сделано 09.06.2026
+5. ~~**Почта**~~ — ✅ Сделано 09.06.2026
    - ✅ Cloudflare Email Routing включён, правило `info@turvakoolitus.eu` → `eduard.rodchenkov@gmail.com` активно
    - ✅ Старые MX/SPF записи Compic удалены, Cloudflare MX записи добавлены
    - ✅ Brevo: домен `turvakoolitus.eu` верифицирован, DKIM + DMARC настроены
@@ -224,6 +234,80 @@ i18n/routing.ts            — locales: ['et', 'ru'], defaultLocale: 'et'
 - **Bureau van Dijk (август 2021)** — утекли публичные бизнес-данные (email, телефон, адрес). Паролей нет, угрозы прямой нет
 - Рекомендовано: включить **2FA на Gmail** → [myaccount.google.com/security](https://myaccount.google.com/security)
 - Рекомендовано: использовать **Bitwarden** (bitwarden.com) для хранения всех паролей
+
+---
+
+## Favicon / иконка сайта
+
+- **12.06.2026** — добавлена иконка сайта (favicon) через [favicon.io](https://favicon.io)
+- Файлы размещены в папке `app/`:
+  - `favicon.ico` — иконка во вкладке браузера
+  - `icon.png` — Android / Chrome / поисковики
+  - `apple-icon.png` — Safari на iPhone/iPad
+- Next.js App Router подхватывает их автоматически, без изменений в коде
+
+### ⏳ Проверить через несколько дней
+- [ ] Убедиться, что новая иконка отображается в результатах поиска Google (обновляется автоматически, занимает несколько дней)
+- [ ] Проверить отображение иконки в браузерной вкладке на мобильных устройствах (iOS Safari, Android Chrome)
+- [ ] Проверить иконку при добавлении сайта на главный экран телефона
+
+---
+
+## Передача доступов клиенту (13.06.2026)
+
+### Аккаунты клиента
+- GitHub username: **Turko-coder**
+- Vercel: зарегистрирован на `info@turvakoolitus.eu`
+- Cloudflare: зарегистрирован на `info@turvakoolitus.eu`
+- Brevo: создаётся новый аккаунт на `info@turvakoolitus.eu` (бесплатный план не позволяет добавлять пользователей)
+- Bitwarden: ещё не создан
+
+### Статус передачи сервисов
+
+| Сервис | Статус | Детали |
+|---|---|---|
+| Zone.ee | ✅ У клиента | Всегда был у клиента |
+| Cloudflare | ✅ Перенесён | Домен теперь в аккаунте клиента. DNS A: `76.76.21.21`. Email Routing настроен |
+| GitHub | ✅ Перенесён | Репо передано: `Turko-coder/turko-site`. Филипп — collaborator |
+| Vercel | ✅ Перенесён | Новый проект на аккаунте клиента, домен подключён, старый проект удалён |
+| Brevo | ✅ Перенесён | Новый аккаунт клиента, домен верифицирован, DKIM обновлён в Cloudflare |
+| Google Search Console | ✅ Перенесён | `eduard.rodchenkov@gmail.com` добавлен как Full user, sitemap отправлен |
+| Bitwarden | ✅ Готово | Организация создана, клиент добавлен, все доступы в коллекции |
+| Gmail клиента | ✅ Работает | `eduard.rodchenkov@gmail.com` — почта info@ пересылается сюда |
+| Compic OÜ | ⚠️ СРОЧНО | Отменить до 01.07.2026! Автопродление включено |
+| online.ee | ⚠️ Не сделано | Настроить пересылку turko@hot.ee → info@turvakoolitus.eu |
+
+### После передачи — сделать с клиентом отдельно
+
+- **Bitwarden мастер-пароль** — текущий пароль временный (создан Филиппом). Нужно будет встретиться с клиентом и сменить на пароль, который знает только он. После смены Филипп не должен знать новый мастер-пароль.
+
+### Незаконченные шаги (продолжить в следующем чате)
+
+1. **Brevo (новый аккаунт клиента):**
+   - Клиент регистрируется на app.brevo.com через `info@turvakoolitus.eu` (бесплатный план)
+   - Senders & IP → Domains → Add a domain → `turvakoolitus.eu`
+   - Brevo выдаст новые DKIM-записи → заменить старые DKIM-записи Филиппа в Cloudflare DNS
+   - Подтвердить верификацию домена
+   - SMTP & API → SMTP → скопировать Login и SMTP key
+   - Удалить домен `turvakoolitus.eu` из аккаунта Филиппа в Brevo
+2. **Vercel** — вставить новые `BREVO_USER` и `BREVO_SMTP_KEY` → Deploy → добавить домен `turvakoolitus.eu` → удалить старый проект с аккаунта Филиппа
+3. **Google Search Console** — добавить `eduard.rodchenkov@gmail.com` как Full user
+4. **Bitwarden** — создать аккаунт клиента → папку «Turko Website» → записать все доступы
+5. **Compic** — отменить подписку до 01.07.2026
+6. **Инструкция для клиента** — подготовить документ по доступам
+
+### Важно по Brevo
+- **Причина создания нового аккаунта:** бесплатный план Brevo не позволяет добавлять пользователей (нужен Standard — платный)
+- **DKIM:** при создании нового аккаунта Brevo выдаёт новые DKIM-ключи. Старые записи в Cloudflare DNS (от аккаунта Филиппа) нужно заменить на новые
+- После обновления DKIM — протестировать отправку писем с сайта
+- Аккаунт Филиппа в Brevo можно оставить или удалить после переноса
+
+### Важно по Vercel
+- Старый Vercel проект (на аккаунте Филиппа) — автодеплой сломан после переноса репо на GitHub
+- Новый проект создаётся на аккаунте клиента (`info-34289349's project`, Hobby)
+- Importing from: `Turko-coder/turko-site`, branch `main`
+- Нужно добавить env vars: `BREVO_USER` и `BREVO_SMTP_KEY` (из нового аккаунта клиента Brevo)
+- После деплоя: добавить домен `turvakoolitus.eu`, убедиться что сайт работает, удалить старый проект
 
 ---
 
