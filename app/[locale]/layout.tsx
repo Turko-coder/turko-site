@@ -3,9 +3,37 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
+import { headers } from 'next/headers'
+import type { Metadata } from 'next'
 import '../globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
+
+const BASE_URL = 'https://www.turvakoolitus.eu'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const headersList = await headers()
+  const pathname = headersList.get('x-pathname') ?? `/${locale}`
+
+  const otherLocale = locale === 'et' ? 'ru' : 'et'
+  const otherPath = pathname.replace(`/${locale}`, `/${otherLocale}`)
+
+  return {
+    alternates: {
+      canonical: `${BASE_URL}${pathname}`,
+      languages: {
+        'et': `${BASE_URL}${pathname.replace(`/${locale}`, '/et')}`,
+        'ru': `${BASE_URL}${pathname.replace(`/${locale}`, '/ru')}`,
+        'x-default': `${BASE_URL}${pathname.replace(`/${locale}`, '/et')}`,
+      },
+    },
+  }
+}
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],

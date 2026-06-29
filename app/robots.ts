@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       allow: '/',
     },
-    sitemap: 'https://turvakoolitus.eu/sitemap.xml',
+    sitemap: 'https://www.turvakoolitus.eu/sitemap.xml',
   }
 }

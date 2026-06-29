@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.turvakoolitus.eu'),
   title: 'Turvakoolitus - Turvakoolituse Keskus',
   description: 'Turvakoolituse keskus - kvaliteetsed turvakoolitused ja koolitused',
 }

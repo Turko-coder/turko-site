@@ -1,6 +1,6 @@
 import { MetadataRoute } from 'next'
 
-const BASE_URL = 'https://turvakoolitus.eu'
+const BASE_URL = 'https://www.turvakoolitus.eu'
 const LOCALES = ['et', 'ru'] as const
 
 type ChangeFreq = 'weekly' | 'monthly'
