@@ -58,6 +58,7 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<Record<string, boolean>>({})
 
   type DropdownKey = 'course' | 'city' | 'month' | 'date' | 'language' | 'mode' | null
   const [openDropdown, setOpenDropdown] = useState<DropdownKey>(null)
@@ -181,8 +182,19 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setSubmitting(true)
     setSubmitError(null)
+
+    const required: (keyof typeof formData)[] = ['course', 'city', 'learningLanguage', 'learningType']
+    const errors: Record<string, boolean> = {}
+    for (const field of required) {
+      if (!formData[field]) errors[field] = true
+    }
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      return
+    }
+    setFieldErrors({})
+    setSubmitting(true)
 
     try {
       const res = await fetch('/api/send-email', {
@@ -221,7 +233,7 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
                 {/* Koolitus */}
                 <div className="relative">
                   <span className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('course')}
+                    {t('course')} *
                   </span>
                   <div ref={courseDdRef} className="relative inline-block w-full">
                     <button
@@ -360,12 +372,15 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
                       })}
                     </div>
                   </div>
+                  {fieldErrors.course && (
+                    <p className="mt-1 text-xs text-red-600">{t('fieldRequired')}</p>
+                  )}
                 </div>
 
                 {/* Linn */}
                 <div className="relative">
                   <span className="block text-sm font-medium text-gray-700 mb-1">
-                    {t('city')}
+                    {t('city')} *
                   </span>
                   <div ref={cityDdRef} className="relative inline-block w-full">
                     <button
@@ -426,6 +441,9 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
                       ))}
                     </div>
                   </div>
+                  {fieldErrors.city && (
+                    <p className="mt-1 text-xs text-red-600">{t('fieldRequired')}</p>
+                  )}
                 </div>
                 {/* Kursuse algus */}
                 <div>
@@ -544,7 +562,7 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
                   {/* Õppekeel */}
                   <div className="relative flex-1">
                     <span className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('language')}
+                      {t('language')} *
                     </span>
                     <div ref={languageDdRef} className="relative inline-block w-full">
                       <button
@@ -618,12 +636,15 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
                         </button>
                       </div>
                     </div>
+                    {fieldErrors.learningLanguage && (
+                      <p className="mt-1 text-xs text-red-600">{t('fieldRequired')}</p>
+                    )}
                   </div>
 
                   {/* Õppeviis */}
                   <div className="relative flex-1">
                     <span className="block text-sm font-medium text-gray-700 mb-1">
-                      {t('studyMode')}
+                      {t('studyMode')} *
                     </span>
                     <div ref={modeDdRef} className="relative inline-block w-full">
                       <button
@@ -697,6 +718,9 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
                         </button>
                       </div>
                     </div>
+                    {fieldErrors.learningType && (
+                      <p className="mt-1 text-xs text-red-600">{t('fieldRequired')}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -777,13 +801,15 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
               </div>
             )}
 
-            <Turnstile
-              siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-              onSuccess={(token) => setTurnstileToken(token)}
-              onExpire={() => setTurnstileToken(null)}
-              onError={() => setTurnstileToken(null)}
-              options={{ theme: 'light', language: locale === 'ru' ? 'ru' : 'et' }}
-            />
+            <div className="flex justify-center w-full">
+              <Turnstile
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                onSuccess={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken(null)}
+                onError={() => setTurnstileToken(null)}
+                options={{ theme: 'light', language: locale === 'ru' ? 'ru' : 'et', size: 'flexible' }}
+              />
+            </div>
 
             <button
               type="submit"

@@ -145,7 +145,8 @@
     "message": "Sõnum",
     "submit": "Saada päring",
     "submitting": "Saatmine...",
-    "loading": "Laadimine..."
+    "loading": "Laadimine...",
+    "fieldRequired": "See väli on kohustuslik"
   },
   "about": {
     "title": "Keskusest",
