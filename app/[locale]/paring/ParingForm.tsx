@@ -215,7 +215,13 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
       const firstError = FIELD_ORDER.find((f) => errors[f])
       if (firstError) {
         setTimeout(() => {
-          document.getElementById(FIELD_ID[firstError])?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          const el = document.getElementById(FIELD_ID[firstError])
+          if (el) {
+            const NAV_HEIGHT = 80
+            const PADDING = 20
+            const top = el.getBoundingClientRect().top + window.scrollY - NAV_HEIGHT - PADDING
+            window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
+          }
         }, 50)
       }
       return
