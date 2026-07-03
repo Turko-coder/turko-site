@@ -146,7 +146,14 @@
     "submit": "Saada päring",
     "submitting": "Saatmine...",
     "loading": "Laadimine...",
-    "fieldRequired": "See väli on kohustuslik"
+    "fieldRequired": "See väli on kohustuslik",
+    "invalidEmail": "Palun sisestage kehtiv e-posti aadress",
+    "invalidPhone": "Palun sisestage kehtiv telefoninumber"
+  },
+  "notFound": {
+    "title": "Lehekülge ei leitud",
+    "message": "Kahjuks sellist lehekülge ei eksisteeri.",
+    "backHome": "Tagasi avalehele"
   },
   "about": {
     "title": "Keskusest",

@@ -47,11 +47,11 @@ export default function Footer() {
               <ul className="h-full flex flex-col justify-between gap-4 items-center min-[430px]:items-start text-center min-[430px]:text-left">
                 <li>
                   <p className="text-xs text-gray-500">{t('phone')}</p>
-                  <p className="text-sm text-gray-600 mt-1">+3725290528</p>
+                  <a href="tel:+3725290528" className="text-sm text-gray-600 mt-1 block hover:text-primary-600 transition-colors">+3725290528</a>
                 </li>
                 <li>
                   <p className="text-xs text-gray-500 font-normal">{t('email')}</p>
-                  <p className="text-sm text-gray-600 mt-1">info@turvakoolitus.eu</p>
+                  <a href="mailto:info@turvakoolitus.eu" className="text-sm text-gray-600 mt-1 block hover:text-primary-600 transition-colors break-all">info@turvakoolitus.eu</a>
                 </li>
                 <li>
                   <p className="text-xs text-gray-500">{t('address')}</p>

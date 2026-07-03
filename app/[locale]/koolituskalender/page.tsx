@@ -181,7 +181,11 @@ function KoolituskalenderContent() {
       }
       return true
     })
-    return [...list].sort((a, b) => courseLevelOrder(a.name) - courseLevelOrder(b.name))
+    return [...list].sort((a, b) => {
+      const dateDiff = a.date.localeCompare(b.date)
+      if (dateDiff !== 0) return dateDiff
+      return courseLevelOrder(a.name) - courseLevelOrder(b.name)
+    })
   }, [events, filterCity, filterCourse, filterMonth])
 
   return (
