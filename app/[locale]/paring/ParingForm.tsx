@@ -202,6 +202,22 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
 
     if (Object.keys(errors).length > 0) {
       setFieldErrors(errors)
+      const FIELD_ORDER = ['course', 'city', 'learningLanguage', 'learningType', 'name', 'email', 'phone']
+      const FIELD_ID: Record<string, string> = {
+        course: 'field-course',
+        city: 'field-city',
+        learningLanguage: 'field-learningLanguage',
+        learningType: 'field-learningType',
+        name: 'name',
+        email: 'email',
+        phone: 'phone',
+      }
+      const firstError = FIELD_ORDER.find((f) => errors[f])
+      if (firstError) {
+        setTimeout(() => {
+          document.getElementById(FIELD_ID[firstError])?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }, 50)
+      }
       return
     }
     setFieldErrors({})
@@ -242,7 +258,7 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
               <h2 className="text-2xl font-bold mb-6 text-gray-900">{t('courseSection')}</h2>
               <div className="space-y-6">
                 {/* Koolitus */}
-                <div className="relative">
+                <div id="field-course" className="relative">
                   <span className="block text-sm font-medium text-gray-700 mb-1">
                     {t('course')} *
                   </span>
@@ -389,7 +405,7 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
                 </div>
 
                 {/* Linn */}
-                <div className="relative">
+                <div id="field-city" className="relative">
                   <span className="block text-sm font-medium text-gray-700 mb-1">
                     {t('city')} *
                   </span>
@@ -571,7 +587,7 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
                 {/* Õppekeel ja õppeviis ühel real (desktop) */}
                 <div className="flex flex-col md:flex-row gap-6">
                   {/* Õppekeel */}
-                  <div className="relative flex-1">
+                  <div id="field-learningLanguage" className="relative flex-1">
                     <span className="block text-sm font-medium text-gray-700 mb-1">
                       {t('language')} *
                     </span>
@@ -653,7 +669,7 @@ export function ParingForm({ courseSelectStyled = false }: { courseSelectStyled?
                   </div>
 
                   {/* Õppeviis */}
-                  <div className="relative flex-1">
+                  <div id="field-learningType" className="relative flex-1">
                     <span className="block text-sm font-medium text-gray-700 mb-1">
                       {t('studyMode')} *
                     </span>
