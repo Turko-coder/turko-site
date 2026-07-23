@@ -39,6 +39,12 @@ const nextConfig = {
       { source: '/meiest/paring',      destination: '/et/registreerimine' },
     ].map((r) => ({ ...r, permanent: true }))
 
+    // Old PHP site paths (/rus/index.php, /est/index.php, etc.)
+    const phpRedirects = [
+      { source: '/rus/:path*', destination: '/ru' },
+      { source: '/est/:path*', destination: '/et' },
+    ].map((r) => ({ ...r, permanent: true }))
+
     // Old site slugs that used "tase" suffix — new site uses shorter slugs
     const taseRedirects = [
       { source: '/kursused/valvetootaja-tase-3', destination: '/et/kursused/valvetootaja' },
@@ -46,7 +52,7 @@ const nextConfig = {
       { source: '/kursused/turvajuht-tase-5', destination: '/et/kursused/turvajuht' },
     ].map((r) => ({ ...r, permanent: true }))
 
-    return [...pathRedirects, ...fixedRedirects, ...taseRedirects]
+    return [...pathRedirects, ...fixedRedirects, ...taseRedirects, ...phpRedirects]
   },
 }
 
