@@ -37,6 +37,9 @@ const nextConfig = {
       { source: '/meiest/koolitus',    destination: '/et/kursused/koolitus' },
       // meiest/paring → registration
       { source: '/meiest/paring',      destination: '/et/registreerimine' },
+      // other old meiest sub-pages
+      { source: '/meiest/partnerid',   destination: '/et/keskusest' },
+      { source: '/meiest/kontakt/paering', destination: '/et/registreerimine' },
     ].map((r) => ({ ...r, permanent: true }))
 
     // Old PHP site paths (/rus/index.php, /est/index.php, etc.)
