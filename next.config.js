@@ -4,23 +4,15 @@ const withNextIntl = require('next-intl/plugin')()
 const nextConfig = {
   reactStrictMode: true,
   async redirects() {
-    // Old site paths that map 1-to-1 with the new /et/ locale prefix
+    // Old paths that map 1-to-1 with the new /et/ locale prefix
     const oldPaths = [
       'kursused',
       'kursused/taiendope',
-      'kursused/oppekavad',
-      'kursused/oppetoo',
       'kursused/koolituskalender',
       'koolituskalender',
       'kontaktid',
       'paring',
-      'meiest',
-      'meiest/ajalugu',
-      'meiest/tegevuse-alus',
-      'meiest/koolitus',
-      'meiest/oppetoo',
       'meiest/kontaktid',
-      'meiest/paring',
       'keskusest',
       'koolitus',
     ]
@@ -31,6 +23,22 @@ const nextConfig = {
       permanent: true,
     }))
 
+    // Old paths whose destination changed in the new site
+    const fixedRedirects = [
+      // oppekavad and oppetoo pages were removed — redirect to training page
+      { source: '/kursused/oppekavad', destination: '/et/kursused/koolitus' },
+      { source: '/kursused/oppetoo',   destination: '/et/kursused/koolitus' },
+      // meiest sub-pages that were removed — redirect to about page
+      { source: '/meiest',             destination: '/et/keskusest' },
+      { source: '/meiest/ajalugu',     destination: '/et/keskusest' },
+      { source: '/meiest/tegevuse-alus', destination: '/et/keskusest' },
+      { source: '/meiest/oppetoo',     destination: '/et/keskusest' },
+      // meiest/koolitus → courses page
+      { source: '/meiest/koolitus',    destination: '/et/kursused/koolitus' },
+      // meiest/paring → registration
+      { source: '/meiest/paring',      destination: '/et/registreerimine' },
+    ].map((r) => ({ ...r, permanent: true }))
+
     // Old site slugs that used "tase" suffix — new site uses shorter slugs
     const taseRedirects = [
       { source: '/kursused/valvetootaja-tase-3', destination: '/et/kursused/valvetootaja' },
@@ -38,7 +46,7 @@ const nextConfig = {
       { source: '/kursused/turvajuht-tase-5', destination: '/et/kursused/turvajuht' },
     ].map((r) => ({ ...r, permanent: true }))
 
-    return [...pathRedirects, ...taseRedirects]
+    return [...pathRedirects, ...fixedRedirects, ...taseRedirects]
   },
 }
 

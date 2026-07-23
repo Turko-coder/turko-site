@@ -11,8 +11,9 @@ interface PageConfig {
   priority: number
 }
 
-// Only real content pages — redirect stubs (kursused, koolitus, kursused/koolituskalender,
-// meiest/keskusest, meiest/kontaktid) are intentionally excluded.
+// Only pages reachable via site navigation.
+// Orphan pages (oppekavad-oppetoo, meiest/tegevuse-alus, meiest/oppetoo) and
+// form-only pages (paring) are intentionally excluded.
 const pages: PageConfig[] = [
   { path: '', changeFrequency: 'weekly', priority: 1.0 },
   { path: '/kursused/koolitus', changeFrequency: 'monthly', priority: 0.9 },
@@ -20,12 +21,9 @@ const pages: PageConfig[] = [
   { path: '/kursused/turvatootaja', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/kursused/turvajuht', changeFrequency: 'monthly', priority: 0.8 },
   { path: '/kursused/taiendope', changeFrequency: 'monthly', priority: 0.8 },
-  { path: '/kursused/oppekavad-oppetoo', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/koolituskalender', changeFrequency: 'weekly', priority: 0.8 },
   { path: '/kontaktid', changeFrequency: 'monthly', priority: 0.7 },
-  { path: '/paring', changeFrequency: 'monthly', priority: 0.7 },
-  { path: '/meiest/tegevuse-alus', changeFrequency: 'monthly', priority: 0.6 },
-  { path: '/meiest/oppetoo', changeFrequency: 'monthly', priority: 0.6 },
+  { path: '/registreerimine', changeFrequency: 'monthly', priority: 0.7 },
   { path: '/keskusest', changeFrequency: 'monthly', priority: 0.7 },
 ]
 
